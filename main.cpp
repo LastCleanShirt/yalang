@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
   std::vector<Token> a = lex.tokenize();
 
   for (const auto& token : a) {
-    std::cout << "(Type: " << tokenTypeToString(token.type) << ", value: " << token.val << std::endl;
+    std::cout << "(Type: " << static_cast<int>(token.type)
+              << ", value: [" << token.val << "])\n";
   }
 
   return 0;

@@ -32,21 +32,17 @@ std::vector<Token> Lexer::tokenize() {
     }
     // String
     else if (c == '"') {
-      advance();
+      advance(); // Ignore the "
       std::string temp;
 
       while (!isAtEnd() && peek() != '"') {
         temp += advance();
       }
 
-      if (peek() == '"'){
+      if (!isAtEnd()) {
         advance();
-      } /*else{
-        Error err{ErrorType::SyntaxError, "'\"' expected", line, column}; 
-        err.print();
-      }*/
-
-      tokens.push_back(Token{TokenType::String, temp});
+        tokens.push_back(Token{TokenType::String, temp});
+      }
     }
 
     else {
@@ -62,27 +58,35 @@ std::vector<Token> Lexer::tokenize() {
 
 
 bool Lexer::isAtEnd() const {
-  return pos >= source.length();
+  return pos >= source.size();
 }
 
 char Lexer::peek() const {
+  if (pos >= source.size()) return '\0';
   if (isAtEnd()) return '\0';
   return source[pos];
 }
 
 char Lexer::advance() {
-  if (isAtEnd()) return '\0';
-  char c = source[pos];
-  pos++;
-  if (c=='\n'){
-    line++;
-    column = 1;
+  if (pos >= source.size()) {
+      std::cerr << "\n[BUG] Reading past end of file at index "
+                << pos << " (size = " << source.size() << ")\n";
+      abort();
   } else {
-    column++;
-  }
+    if (isAtEnd()) return '\0';
+      char c = source[pos];
+      pos++;
+      if (c=='\n'){
+        line++;
+        column = 1;
+      } else {
+        column++;
+      }
 
-  return c;
-   
+      return c;
+
+  }
+     
 }
 
 bool Lexer::isOperator(char c) const {
