@@ -1,0 +1,2 @@
+# yalang
+A language
