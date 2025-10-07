@@ -19,6 +19,7 @@ class Lexer {
     char advance();
     bool isAtEnd() const;
     bool isOperator(char c) const;
+    bool isIdentifier(char c) const;
 };
 
 

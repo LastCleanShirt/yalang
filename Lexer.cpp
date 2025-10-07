@@ -35,16 +35,34 @@ std::vector<Token> Lexer::tokenize() {
       advance(); // Ignore the "
       std::string temp;
 
-      while (!isAtEnd() && peek() != '"') {
+      while (!isAtEnd() && peek() != '"' && peek() != '\n') {
+        temp += advance();
+      }
+      if (peek() == '\n') {
+        Error err{ErrorType::SyntaxError, " \" Expected", start_line, start_column};
+        err.print();
+      }
+      else if (!isAtEnd()) {
+        advance();
+        tokens.push_back(Token{TokenType::String, temp});
+      }
+    }
+// TODO: NOTE, variabel yang diawali dari angka, kasih error, untuk skrg fokus ke identifier aja dulu
+    // Identifier
+    else if (isIdentifier(c)) {
+      //std::cout << "Found identifier" << std::endl;
+      std::string temp;
+      while(!isAtEnd() && isIdentifier(peek()) && peek() != '\n') {
         temp += advance();
       }
 
       if (!isAtEnd()) {
         advance();
-        tokens.push_back(Token{TokenType::String, temp});
+        tokens.push_back(Token{TokenType::Identifier, temp});
       }
-    }
 
+      
+    }
     else {
       advance();
     }
@@ -91,4 +109,8 @@ char Lexer::advance() {
 
 bool Lexer::isOperator(char c) const {
   return c == '+' || c == '-' || c == '*' || c == '/' || c == '=';
+}
+
+bool Lexer::isIdentifier(char c) const{
+  return std::string("abcdefghijklmnopqrstuvwxyz_").find(c) != std::string::npos;
 }
