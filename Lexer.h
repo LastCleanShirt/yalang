@@ -16,6 +16,7 @@ class Lexer {
     int line, column;
 
     char peek() const;
+    char peek_next() const;
     char advance();
     bool isAtEnd() const;
     bool isOperator(char c) const;

@@ -27,8 +27,17 @@ std::vector<Token> Lexer::tokenize() {
     }
 
     else if (isOperator(c)) {
-      tokens.push_back(Token{TokenType::Operator, std::string(1, c)});
-      advance();
+      if (c == '/') {
+        if (peek_next() == '/') {
+          while (!isAtEnd() && peek() != '\n') advance();
+        } else {
+          tokens.push_back(Token{TokenType::Operator, std::string(1, c)});
+          advance();
+        }
+      } else {
+        tokens.push_back(Token{TokenType::Operator, std::string(1, c)});
+        advance();
+      }
     }
     // String
     else if (c == '"') {
@@ -83,6 +92,12 @@ char Lexer::peek() const {
   if (pos >= source.size()) return '\0';
   if (isAtEnd()) return '\0';
   return source[pos];
+}
+
+char Lexer::peek_next() const {
+  if (pos >= source.size()) return '\0';
+  if (isAtEnd()) return '\0';
+  return source[pos+1];
 }
 
 char Lexer::advance() {
