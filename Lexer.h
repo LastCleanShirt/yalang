@@ -21,6 +21,7 @@ class Lexer {
     bool isAtEnd() const;
     bool isOperator(char c) const;
     bool isIdentifier(char c) const;
+    bool isKeyword(std::string c) const;
 };
 
 

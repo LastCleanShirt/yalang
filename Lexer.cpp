@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include "Lexer.h"
 #include "Error.h"
 
@@ -56,6 +57,9 @@ std::vector<Token> Lexer::tokenize() {
         tokens.push_back(Token{TokenType::String, temp});
       }
     }
+    
+
+
 // TODO: NOTE, variabel yang diawali dari angka, kasih error, untuk skrg fokus ke identifier aja dulu
     // Identifier
     else if (isIdentifier(c)) {
@@ -67,7 +71,8 @@ std::vector<Token> Lexer::tokenize() {
 
       if (!isAtEnd()) {
         advance();
-        tokens.push_back(Token{TokenType::Identifier, temp});
+        if (Lexer::isKeyword(temp)) tokens.push_back(Token{TokenType::Keyword, temp});
+        else tokens.push_back(Token{TokenType::Identifier, temp});
       }
 
       
@@ -128,4 +133,17 @@ bool Lexer::isOperator(char c) const {
 
 bool Lexer::isIdentifier(char c) const{
   return std::string("abcdefghijklmnopqrstuvwxyz_").find(c) != std::string::npos;
+}
+
+bool Lexer::isKeyword(std::string c) const {
+  static const std::unordered_set<std::string> keywords = {
+    "start", "end",
+    "if", "else",
+    "for", "while", "do",
+    "return",
+    "int", "flt", "bool", "str",
+    "true", "false"
+  };
+  
+  return keywords.find(c) != keywords.end();
 }
