@@ -20,6 +20,7 @@ class Lexer {
     char advance();
     bool isAtEnd() const;
     bool isOperator(char c) const;
+    bool isSeparator(char c) const;
     bool isIdentifier(char c) const;
     bool isKeyword(std::string c) const;
 };

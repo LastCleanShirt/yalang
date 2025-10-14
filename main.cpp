@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "Lexer.h"
+#include "Parser.h"
 #include "Token.h"
 
 std::string readFileIntoString(const std::string& filePath) {

@@ -19,7 +19,13 @@ std::vector<Token> Lexer::tokenize() {
     if (isdigit(c)){
       std::string temp;
 
-      while(isdigit(peek())) {
+      while(isdigit(peek()) || peek() == '.') {
+        if (peek() == '.'  && !isdigit(peek_next())) {
+          Error err{ErrorType::SyntaxError, " Unexpected operator '.'", start_line, start_column};
+          err.print();
+          temp = "";
+          break;
+        }
         temp+=advance();
       }
 
@@ -39,6 +45,11 @@ std::vector<Token> Lexer::tokenize() {
         tokens.push_back(Token{TokenType::Operator, std::string(1, c)});
         advance();
       }
+    }
+
+    else if (isSeparator(c)) {
+      tokens.push_back(Token{TokenType::Separator, std::string(1, c)});
+      advance();
     }
     // String
     else if (c == '"') {
@@ -61,16 +72,16 @@ std::vector<Token> Lexer::tokenize() {
 
 
 // TODO: NOTE, variabel yang diawali dari angka, kasih error, untuk skrg fokus ke identifier aja dulu
+// TODO: SEPARATOR
+
     // Identifier
     else if (isIdentifier(c)) {
       //std::cout << "Found identifier" << std::endl;
       std::string temp;
-      while(!isAtEnd() && isIdentifier(peek()) && peek() != '\n') {
+      while(!isAtEnd() && isIdentifier(peek()) && peek() != '\n' && !isOperator(peek()) && !isSeparator(peek())) {
         temp += advance();
       }
-
       if (!isAtEnd()) {
-        advance();
         if (Lexer::isKeyword(temp)) tokens.push_back(Token{TokenType::Keyword, temp});
         else tokens.push_back(Token{TokenType::Identifier, temp});
       }
@@ -84,6 +95,7 @@ std::vector<Token> Lexer::tokenize() {
 
   }
 
+  tokens.push_back(Token{TokenType::End, "EOF"});
   return tokens;
 
 };
@@ -128,7 +140,11 @@ char Lexer::advance() {
 }
 
 bool Lexer::isOperator(char c) const {
-  return c == '+' || c == '-' || c == '*' || c == '/' || c == '=';
+  return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c == '{' || c == '}' ;
+}
+
+bool Lexer::isSeparator(char c) const {
+  return c == ',' || c == '=';
 }
 
 bool Lexer::isIdentifier(char c) const{
